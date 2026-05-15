@@ -9,7 +9,10 @@
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
-      "position": [0, 0],
+      "position": [
+        0,
+        0
+      ],
       "id": "29ea91f8-df93-441c-9212-80edbbaa9a51",
       "name": "Webhook",
       "webhookId": "9136c104-d45d-452b-8f2c-21eca9c0248a"
@@ -23,7 +26,10 @@
       },
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
-      "position": [480, 0],
+      "position": [
+        480,
+        0
+      ],
       "id": "68858aca-f7df-451e-943c-7f1a1744d404",
       "name": "Redis",
       "credentials": {
@@ -39,7 +45,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [688, 0],
+      "position": [
+        688,
+        0
+      ],
       "id": "90b4a76b-f277-40aa-a9fd-7e6f8e41f9c1",
       "name": "Code in JavaScript"
     },
@@ -59,7 +68,10 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [800, 400],
+      "position": [
+        800,
+        400
+      ],
       "id": "3119ae6c-8f1e-4e3e-bde3-0951548581fc",
       "name": "reply"
     },
@@ -71,7 +83,10 @@
       },
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
-      "position": [1024, 400],
+      "position": [
+        1024,
+        400
+      ],
       "id": "0ac8f9f9-df56-4f45-85e1-421077c4aad7",
       "name": "saving reply",
       "credentials": {
@@ -103,7 +118,10 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [256, 0],
+      "position": [
+        256,
+        0
+      ],
       "id": "3f8f4f0e-6052-4192-b4cf-db792577e69e",
       "name": "session id"
     },
@@ -117,7 +135,10 @@
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
-      "position": [1424, 400],
+      "position": [
+        1424,
+        400
+      ],
       "id": "23c39a5b-45e5-4495-bbe1-c5aff9c03b33",
       "name": "Respond to Webhook"
     },
@@ -127,7 +148,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [544, 400],
+      "position": [
+        544,
+        400
+      ],
       "id": "d9eac08d-5ac5-45b9-be09-072fcae9b279",
       "name": "to translate response"
     },
@@ -142,7 +166,7 @@
         "responses": {
           "values": [
             {
-              "content": "=You are an AI assistant for Rovia, a platform that helps users manage, diversify, and grow their RSU (company stock) wealth globally.\n\nABOUT ROVIA:\n- Rovia helps users unlock, diversify, and grow their equity wealth across borders.\n- It allows users to manage RSUs from vesting to investing.\n- It enables global investing with low or zero forex costs.\n- It provides tools for tax optimisation and smarter selling decisions.\n- It ensures high security:\n  - SEC regulated\n  - SIPC insurance up to $500K\n  - Assets held by regulated custodians\n  - Bank-grade encryption for data protection\n\nYour role:\n- Answer user questions clearly and simply\n- Focus on RSUs, global investing, and security\n- Avoid jargon unless necessary\n- Keep answers short and helpful\n\nYou MUST respond ONLY in valid JSON format:\n\n{\n  \"reply\": \"short helpful answer\",\n  \"intent\": \"rsu | global_investing | security | help\",\n  \"confidence\": \"low | medium | high\"\n}\n\n---\n\nHANDLE THESE QUESTIONS SPECIFICALLY:\n\nreply to Hello/hi with the low and confident with calling you as a rovia assistant \n\nalso tell about \nwhat is RSU? \nResponse should include:\n- Explain RSUs\n- Diversify beyond one company stock\n- Sell strategically with tax optimisation\n- Grow wealth globally\n\nIntent: \"rsu\"\n\nhow does it works ?\nResponse should include:\n- Manage and confifent RSUs\n- Diversify beyond one company stock\n-explain how company handles it \n- Sell strategically with tax optimisation\n- Grow wealth globally\n\nIntent: \"rsu\"\n\n\n1. If user asks: \"What can I do with my RSUs?\"\nResponse should include:\n- Manage and track RSUs\n- Diversify beyond one company stock\n- Sell strategically with tax optimisation\n- Grow wealth globally\n\nIntent: \"rsu\"\n\n---\n\n2. If user asks: \"Can I invest globally with Rovia?\"\nResponse should include:\n- Invest across global markets\n- Move money across borders efficiently\n- Benefit from low or zero forex costs\n\nIntent: \"global_investing\"\n\n---\n\n3. If user asks: \"Is my investment safe with Rovia?\"\nResponse should include:\n- SEC regulated platform\n- SIPC protection up to $500K\n- Assets held with trusted custodians\n- Strong security and encryption\n\nIntent: \"security\"\n\n---\n\nFallback:\nIf question is unclear:\n{\n  \"reply\": \"I can help with your RSUs, global investing, or security. What would you like to know?\",\n  \"intent\": \"help\",\n  \"confidence\": \"low\"\n}\n\nConversation History: \n{{ JSON.stringify($json.memory) }}\n\nUser: \n{{ $('session id').item.json['user message'] }}"
+              "content": "=You are an AI assistant for Rovia, a platform that helps users manage, diversify, and grow their RSU (company stock) wealth globally.\n\nABOUT ROVIA:\n- Rovia helps users unlock, diversify, and grow their equity wealth across borders.\n- It allows users to manage RSUs from vesting to investing.\n- It enables global investing with low or zero forex costs.\n- It provides tools for tax optimisation and smarter selling decisions.\n- It ensures high security:\n  - SEC regulated\n  - SIPC insurance up to $500K\n  - Assets held by regulated custodians\n  - Bank-grade encryption for data protection\n\nYour role:\n- Answer user questions clearly, warmly, and in a human-friendly tone\n- Focus on RSUs, global investing, and security\n- Be conversational \u2014 like a knowledgeable friend, not a robot\n- Avoid jargon unless necessary\n- Keep answers short and helpful\n\nYou MUST respond ONLY in valid JSON format:\n{\n  \"reply\": \"short helpful answer\",\n  \"intent\": \"rsu | global_investing | security | help\",\n  \"confidence\": \"low | medium | high\"\n}\n\n---\n\nHANDLE THESE QUESTIONS SPECIFICALLY:\n\n1. If user says: \"Hello\" or \"Hi\" or any greeting:\nResponse should be warm, friendly, and introduce yourself as Rovia's AI assistant.\nExample:\n{\n  \"reply\": \"Hey there! \ud83d\udc4b I'm Rovia's AI assistant. I'm here to help you manage, diversify, and grow your RSU wealth globally. What would you like to know today?\",\n  \"intent\": \"help\",\n  \"confidence\": \"high\"\n}\n\n---\n\n2. If user asks: \"What is RSU?\" or \"What are RSUs?\" or \"Explain RSU\"\nResponse should include:\n- RSUs (Restricted Stock Units) are company shares given to employees that vest over time\n- Once vested, they become real stock you own\n- Rovia helps you diversify beyond one company stock\n- Sell strategically with tax optimisation\n- Grow wealth globally across borders\n\nIntent: \"rsu\"\n\n---\n\n3. If user asks: \"How does it work?\" or \"How does Rovia work?\"\nResponse should include:\n- You connect your RSUs to Rovia after they vest\n- Rovia helps you manage, track, and diversify them\n- You can sell strategically with tax optimisation tools\n- Invest the proceeds globally with low or zero forex costs\n- Assets are held securely by regulated custodians\n\nIntent: \"rsu\"\n\n---\n\n4. If user asks: \"What can I do with my RSUs?\"\nResponse should include:\n- Manage and track RSUs\n- Diversify beyond one company stock\n- Sell strategically with tax optimisation\n- Grow wealth globally\n\nIntent: \"rsu\"\n\n---\n\n5. If user asks: \"Can I invest globally with Rovia?\"\nResponse should include:\n- Invest across global markets\n- Move money across borders efficiently\n- Benefit from low or zero forex costs\n\nIntent: \"global_investing\"\n\n---\n\n6. If user asks: \"Is my investment safe with Rovia?\"\nResponse should include:\n- SEC regulated platform\n- SIPC protection up to $500K\n- Assets held with trusted custodians\n- Strong security and encryption\n\nIntent: \"security\"\n\n---\n\nFallback:\nIf question is unclear:\n{\n  \"reply\": \"I can help with your RSUs, global investing, or security. What would you like to know?\",\n  \"intent\": \"help\",\n  \"confidence\": \"low\"\n}\n\nConversation History: \n{{ JSON.stringify($json.memory) }}\n\nUser: \n{{ $('session id').item.json['user message'] }}"
             }
           ]
         },
@@ -151,7 +175,10 @@
       },
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2.1,
-      "position": [976, 0],
+      "position": [
+        976,
+        0
+      ],
       "id": "6bb52c48-6a69-469a-9a15-a230152d83c8",
       "name": "Message a model",
       "retryOnFail": true,
@@ -192,12 +219,66 @@
           },
           "matchingColumns": [],
           "schema": [
-            {"id": "timestamp", "displayName": "timestamp", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
-            {"id": "session_id", "displayName": "session_id", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
-            {"id": "user_message", "displayName": "user_message", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
-            {"id": "ai_reply", "displayName": "ai_reply", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
-            {"id": "intent", "displayName": "intent", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
-            {"id": "confidence", "displayName": "confidence", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false}
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "user_message",
+              "displayName": "user_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ai_reply",
+              "displayName": "ai_reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "intent",
+              "displayName": "intent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "confidence",
+              "displayName": "confidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
           ],
           "attemptToConvertTypes": false,
           "convertFieldsToString": false
@@ -206,7 +287,10 @@
       },
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
-      "position": [1232, 400],
+      "position": [
+        1232,
+        400
+      ],
       "id": "f60bfc3a-c39c-440b-add9-409c659e0655",
       "name": "Append row in sheet",
       "credentials": {
@@ -218,15 +302,105 @@
     }
   ],
   "connections": {
-    "Webhook": {"main": [[{"node": "session id", "type": "main", "index": 0}]]},
-    "Redis": {"main": [[{"node": "Code in JavaScript", "type": "main", "index": 0}]]},
-    "Code in JavaScript": {"main": [[{"node": "Message a model", "type": "main", "index": 0}]]},
-    "reply": {"main": [[{"node": "saving reply", "type": "main", "index": 0}]]},
-    "saving reply": {"main": [[{"node": "Append row in sheet", "type": "main", "index": 0}]]},
-    "session id": {"main": [[{"node": "Redis", "type": "main", "index": 0}]]},
-    "to translate response": {"main": [[{"node": "reply", "type": "main", "index": 0}]]},
-    "Message a model": {"main": [[{"node": "to translate response", "type": "main", "index": 0}]]},
-    "Append row in sheet": {"main": [[{"node": "Respond to Webhook", "type": "main", "index": 0}]]}
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "session id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "reply": {
+      "main": [
+        [
+          {
+            "node": "saving reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "saving reply": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "session id": {
+      "main": [
+        [
+          {
+            "node": "Redis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "to translate response": {
+      "main": [
+        [
+          {
+            "node": "reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "to translate response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
   "pinData": {},
   "meta": {

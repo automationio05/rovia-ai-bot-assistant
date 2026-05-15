@@ -1,0 +1,236 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "rovia-chat",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [0, 0],
+      "id": "29ea91f8-df93-441c-9212-80edbbaa9a51",
+      "name": "Webhook",
+      "webhookId": "9136c104-d45d-452b-8f2c-21eca9c0248a"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "memory",
+        "key": "=rovia:session:{{ $json['session id'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [480, 0],
+      "id": "68858aca-f7df-451e-943c-7f1a1744d404",
+      "name": "Redis",
+      "credentials": {
+        "redis": {
+          "id": "rhPInKJIRr4twJF9",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let history = [];\n\ntry {\n  history = JSON.parse($json.value || \"[]\");\n} catch (e) {\n  history = [];\n}\n\nreturn [{\n  json: {\n    ...$json,\n    memory: history\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [688, 0],
+      "id": "90b4a76b-f277-40aa-a9fd-7e6f8e41f9c1",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "32db27a4-1b13-47ab-8309-b140da72870c",
+              "name": "=reply",
+              "value": "={{ $json.reply }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [800, 400],
+      "id": "3119ae6c-8f1e-4e3e-bde3-0951548581fc",
+      "name": "reply"
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "=rovia:session:{{ $('session id').item.json['session id'] }}",
+        "value": "={{ JSON.stringify([\n  ...($json.memory || []).slice(-10),\n  { role: \"user\", content: $json[\"user message\"] },\n  { role: \"assistant\", content: $json.reply }\n]) }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [1024, 400],
+      "id": "0ac8f9f9-df56-4f45-85e1-421077c4aad7",
+      "name": "saving reply",
+      "credentials": {
+        "redis": {
+          "id": "rhPInKJIRr4twJF9",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f6f2b19e-18e0-4f00-84a0-9455b1ec916d",
+              "name": "=session id",
+              "value": "={{ $json.body?.sessionId ?? $json.body?.session_id ?? (\"anon-\" + Date.now()) }}",
+              "type": "string"
+            },
+            {
+              "id": "8148fd62-7bd4-4c71-8afe-ec8256c9a614",
+              "name": "=user message",
+              "value": "={{ $json.body.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [256, 0],
+      "id": "3f8f4f0e-6052-4192-b4cf-db792577e69e",
+      "name": "session id"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [1424, 400],
+      "id": "23c39a5b-45e5-4495-bbe1-c5aff9c03b33",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "let raw = $json.output?.[0]?.content?.[0]?.text || \"\";\n\nraw = raw.replace(/```json|```/g, \"\").trim();\n\nlet parsed;\n\ntry {\n  parsed = JSON.parse(raw);\n} catch (e) {\n  parsed = {\n    reply: raw || \"Sorry, I couldn't understand.\",\n    intent: \"help\",\n    confidence: \"low\"\n  };\n}\n\nreturn [{ json: parsed }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [544, 400],
+      "id": "d9eac08d-5ac5-45b9-be09-072fcae9b279",
+      "name": "to translate response"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are an AI assistant for Rovia, a platform that helps users manage, diversify, and grow their RSU (company stock) wealth globally.\n\nABOUT ROVIA:\n- Rovia helps users unlock, diversify, and grow their equity wealth across borders.\n- It allows users to manage RSUs from vesting to investing.\n- It enables global investing with low or zero forex costs.\n- It provides tools for tax optimisation and smarter selling decisions.\n- It ensures high security:\n  - SEC regulated\n  - SIPC insurance up to $500K\n  - Assets held by regulated custodians\n  - Bank-grade encryption for data protection\n\nYour role:\n- Answer user questions clearly and simply\n- Focus on RSUs, global investing, and security\n- Avoid jargon unless necessary\n- Keep answers short and helpful\n\nYou MUST respond ONLY in valid JSON format:\n\n{\n  \"reply\": \"short helpful answer\",\n  \"intent\": \"rsu | global_investing | security | help\",\n  \"confidence\": \"low | medium | high\"\n}\n\n---\n\nHANDLE THESE QUESTIONS SPECIFICALLY:\n\nreply to Hello/hi with the low and confident with calling you as a rovia assistant \n\nalso tell about \nwhat is RSU? \nResponse should include:\n- Explain RSUs\n- Diversify beyond one company stock\n- Sell strategically with tax optimisation\n- Grow wealth globally\n\nIntent: \"rsu\"\n\nhow does it works ?\nResponse should include:\n- Manage and confifent RSUs\n- Diversify beyond one company stock\n-explain how company handles it \n- Sell strategically with tax optimisation\n- Grow wealth globally\n\nIntent: \"rsu\"\n\n\n1. If user asks: \"What can I do with my RSUs?\"\nResponse should include:\n- Manage and track RSUs\n- Diversify beyond one company stock\n- Sell strategically with tax optimisation\n- Grow wealth globally\n\nIntent: \"rsu\"\n\n---\n\n2. If user asks: \"Can I invest globally with Rovia?\"\nResponse should include:\n- Invest across global markets\n- Move money across borders efficiently\n- Benefit from low or zero forex costs\n\nIntent: \"global_investing\"\n\n---\n\n3. If user asks: \"Is my investment safe with Rovia?\"\nResponse should include:\n- SEC regulated platform\n- SIPC protection up to $500K\n- Assets held with trusted custodians\n- Strong security and encryption\n\nIntent: \"security\"\n\n---\n\nFallback:\nIf question is unclear:\n{\n  \"reply\": \"I can help with your RSUs, global investing, or security. What would you like to know?\",\n  \"intent\": \"help\",\n  \"confidence\": \"low\"\n}\n\nConversation History: \n{{ JSON.stringify($json.memory) }}\n\nUser: \n{{ $('session id').item.json['user message'] }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [976, 0],
+      "id": "6bb52c48-6a69-469a-9a15-a230152d83c8",
+      "name": "Message a model",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "openAiApi": {
+          "id": "bboBjskHI2yXCoK8",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1oiv-vRhXwM-qi6ZpUVu3tUbtDj31buDAyTC7zHOz6KI",
+          "mode": "list",
+          "cachedResultName": "chat history",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oiv-vRhXwM-qi6ZpUVu3tUbtDj31buDAyTC7zHOz6KI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Queries ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oiv-vRhXwM-qi6ZpUVu3tUbtDj31buDAyTC7zHOz6KI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ai_reply": "={{ $json.reply }}",
+            "session_id": "={{ $('session id').item.json['session id'] }}",
+            "user_message": "={{ $('session id').item.json['user message'] }}",
+            "intent": "={{ $('to translate response').item.json.intent }}",
+            "confidence": "={{ $('to translate response').item.json.confidence }}",
+            "timestamp": "={{ $now.format('yyyy-MM-dd')}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {"id": "timestamp", "displayName": "timestamp", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "session_id", "displayName": "session_id", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "user_message", "displayName": "user_message", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "ai_reply", "displayName": "ai_reply", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "intent", "displayName": "intent", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "confidence", "displayName": "confidence", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [1232, 400],
+      "id": "f60bfc3a-c39c-440b-add9-409c659e0655",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "HtV4GSOBNsIsTBur",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {"main": [[{"node": "session id", "type": "main", "index": 0}]]},
+    "Redis": {"main": [[{"node": "Code in JavaScript", "type": "main", "index": 0}]]},
+    "Code in JavaScript": {"main": [[{"node": "Message a model", "type": "main", "index": 0}]]},
+    "reply": {"main": [[{"node": "saving reply", "type": "main", "index": 0}]]},
+    "saving reply": {"main": [[{"node": "Append row in sheet", "type": "main", "index": 0}]]},
+    "session id": {"main": [[{"node": "Redis", "type": "main", "index": 0}]]},
+    "to translate response": {"main": [[{"node": "reply", "type": "main", "index": 0}]]},
+    "Message a model": {"main": [[{"node": "to translate response", "type": "main", "index": 0}]]},
+    "Append row in sheet": {"main": [[{"node": "Respond to Webhook", "type": "main", "index": 0}]]}
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8869297c5c6aa56e00dc6d71d27f5b0f1622b3a1f84ec237d14170d712727d0b"
+  }
+}

@@ -506,12 +506,9 @@
 </footer>
 
 <script>
-  // Chat functionality
-  const responses = {
-    "what can i do with my rsus": "With Rovia, you can track your RSU vesting schedule, model tax scenarios before selling, diversify proceeds into global markets, and set automated sell rules. We help you turn equity into a long-term wealth strategy rather than a one-time event.",
-    "can i invest globally with rovia": "Absolutely! Rovia provides access to international markets across North America, Europe, and Asia-Pacific — all from a single dashboard. You can diversify your RSU proceeds into ETFs, bonds, and equities globally with no currency friction.",
-    "is my investment safe with rovia": "Your investments are protected on multiple levels: Rovia is SEC-regulated, provides SIPC coverage up to $500K, and uses AES-256 bank-grade encryption. All data is stored in SOC 2 Type II certified infrastructure with zero-trust access controls."
-  };
+  // Session ID persisted across page reload
+  const SESSION_ID = 'session_' + Math.random().toString(36).substr(2, 9);
+  const WEBHOOK_URL = 'https://khanai10.app.n8n.cloud/webhook/rovia-chat';
 
   function addMessage(text, isUser) {
     const msgs = document.getElementById('chatMessages');
@@ -536,22 +533,39 @@
     if (t) t.remove();
   }
 
-  function getReply(text) {
-    const lower = text.toLowerCase();
-    for (const [key, val] of Object.entries(responses)) {
-      if (lower.includes(key.split(' ')[2]) || lower.includes(key.split(' ')[0])) return val;
-    }
-    return "Great question! Rovia's AI advisor can help you with RSU management, global portfolio diversification, tax-loss harvesting strategies, and investment security. Could you share more details so I can give you a precise answer?";
-  }
-
-  function sendMessage() {
+  async function sendMessage() {
     const input = document.getElementById('chatInput');
     const text = input.value.trim();
     if (!text) return;
+
     addMessage(text, true);
     input.value = '';
     showTyping();
-    setTimeout(() => { removeTyping(); addMessage(getReply(text), false); }, 1200 + Math.random() * 600);
+
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, sessionId: SESSION_ID })
+      });
+
+      const data = await res.json();
+
+      // Handle both raw JSON string and parsed object
+      let parsed = data;
+      if (typeof data === 'string') {
+        try { parsed = JSON.parse(data); } catch(e) {}
+      }
+
+      const reply = parsed?.reply || parsed?.message || "I'm here to help! Ask me about RSUs, global investing, or security.";
+      removeTyping();
+      addMessage(reply, false);
+
+    } catch (err) {
+      removeTyping();
+      addMessage("Sorry, I'm having trouble connecting right now. Please try again in a moment.", false);
+      console.error('Webhook error:', err);
+    }
   }
 
   function sendSuggestion(el) { document.getElementById('chatInput').value = el.textContent; sendMessage(); }
